@@ -1,0 +1,144 @@
+
+<!doctype html>
+<html>
+   <head lang="en">
+      <meta charset="utf-8"/>
+      <title>document</title>
+      <style>
+          *{
+              padding:0px;
+              margin:0px;
+              list-style: none;
+              font-family:"腾祥铁山楷书简";
+          }
+          body,html{
+              width:100%;
+              height:100%;
+          }
+          #items,#moive{
+              width:60%;
+              margin:10px auto;
+              padding:30px;
+              border:1px solid black;
+          }
+          #items{
+              position: relative;
+          }
+          input{
+              margin:0px 10px;
+              height:50px;
+              text-align: center;
+          }
+          input:first-child{
+              text-align: left;
+              width:20%
+          }
+          input:last-child{
+              width:10%;
+          }
+          #item1{
+              width:100%;
+              margin:auto;
+              overflow: hidden;
+          }
+          #item1 img{
+              width:40%;
+              height:500px;
+              float: left;
+          }
+          #item1 #dyxx{
+              float:right;
+              width:55%;
+              height:500px;
+              overflow: scroll;
+          }
+          p{
+            font-size: 30px;
+            line-height:40px;
+          }
+          #item2{
+              margin-top:50px;
+              text-align: center;
+          }
+          .star{
+              display: flex;
+              justify-content: space-around;
+          }
+          .undata{
+              position: absolute;
+              left:800px;
+              top:50px;
+              text-align: center;
+              width:200px;
+              line-height: 40px;
+              background: rgba(255,0,0,0.3);
+              display: none;
+          }
+      </style>
+	  
+   </head>
+   <body>
+      <div id="moive">
+            <input type="text" placeholder="请输入电影名称" id="txt" value="夏洛特烦恼">
+            <input type="button" value="发送请求" id="btn1">
+      </div>
+     <div id="items">
+      
+     </div>
+    <div class="undata">fsd</div>
+   </body>
+</html>
+<script src="jquery-3.3.1.min.js"></script>
+<script src="template-native.js"></script>
+<!--创建模板引擎-->
+<script type="text/template" id="template">
+<div id="item1">
+<img src="<%=cover%>"> 
+<div id="dyxx">
+<p>电影名称: <%=title%></p>
+<p>电影类型: <%=tag%></p>
+<p>演员名称: <%=act%></p>
+<p>上映年份: <%=year%></p>
+<p>电影评分: <%=rating%></p>
+<p>电影简介: <%=desc%></p>
+</div>
+
+</div>
+<div id="item2">
+<ul class="star">
+    <%for(var i=0;i<act_s.length;i++){%>
+        <li><img src="<%=act_s[i].image%>"><p><%=act_s[i].name%></p></li>
+    <%}%>
+</ul>
+<div>
+</script>
+<script>
+    $(function(){
+        $("#btn1").click(function(){
+            var move=$("#txt").val();
+            $.ajax({
+                url:"http://op.juhe.cn/onebox/movie/video?key=78149db5a930d0904f82b8a7780bea5a&q="+move,
+                dataType:"jsonp",
+                success:function(data){
+                    //console.log(data);
+                    // alert(data.reason);
+                    if(data.reason=="查询不到该影片相关信息"){
+                        $(".undata").text("亲，查询不到该影片哦").show(100).delay(2000).hide(100);
+                    };
+                    //创建对象
+                   var obj=data.result;
+                    //调用模板引擎并返回
+                    var resulta=template("template",obj);
+                    //添加到页面上
+                    $("#items").html(resulta);
+                },
+                beforeSend:function(){
+                     if($("#txt").val()==""){
+                        alert("请输入影片名");
+                        return false;
+                    };
+                }
+            })
+        })
+    })
+</script>
